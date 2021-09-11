@@ -2,6 +2,8 @@ const express = require("express");
 const app = express();
 const port = 5000;
 const cors = require("cors");
+const bodyParser = require("body-parser");
+app.use(bodyParser.json());
 app.use(cors());
 app.get("/", (req, res) => {
   res.send("Hello");
@@ -23,7 +25,11 @@ client.connect((err) => {
   // ========= Checking Identity ========= //
 
   app.post("/checkIdentity", (req, res) => {
-    console.log(req.body);
+    const email = req.body.email;
+    adminCollection.find({ email: email }).toArray((err, docs) => {
+      const result = docs.length > 0;
+      res.send(result);
+    });
   });
 
   // ========= Checking Identity ========= //
