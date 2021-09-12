@@ -3,6 +3,7 @@ const app = express();
 const port = 5000;
 const cors = require("cors");
 const bodyParser = require("body-parser");
+require("dotenv").config();
 app.use(bodyParser.json());
 app.use(cors());
 app.get("/", (req, res) => {
@@ -12,8 +13,7 @@ app.get("/", (req, res) => {
 // ============= Connecting to MongoDB Database ========== //
 
 const { MongoClient } = require("mongodb");
-const uri =
-  "mongodb+srv://jihadchowdhory:s0mVRbU7ErUx0lJK@cluster0.8fqqs.mongodb.net/redOnion?retryWrites=true&w=majority";
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.8fqqs.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -27,15 +27,19 @@ client.connect((err) => {
   app.post("/checkIdentity", (req, res) => {
     const email = req.body.email;
     adminCollection.find({ email: email }).toArray((err, docs) => {
-      const result = docs.length > 0;
-      res.send(result);
+      if (docs) {
+        result = docs.length > 0;
+        res.send(result);
+      } else {
+        res.send(err);
+      }
     });
   });
 
-  // ========= Checking Identity ========= //
+  // =====x==== Checking Identity =====x==== //
 });
 
-// ============= Connecting to MongoDB Database ========== //
-app.listen(5000, () => {
+// ======x======= Connecting to MongoDB Database =====x===== //
+app.listen(process.env.PORT || port, () => {
   console.log("Listening to port 5000");
 });
