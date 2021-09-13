@@ -7,7 +7,7 @@ require("dotenv").config();
 app.use(bodyParser.json());
 app.use(cors());
 app.get("/", (req, res) => {
-  res.send("Hello");
+  res.send("RED ONION FOODS - Jihad Chowdhory (Developer)");
 });
 
 // ============= Connecting to MongoDB Database ========== //
@@ -21,6 +21,7 @@ const client = new MongoClient(uri, {
 client.connect((err) => {
   const db = client.db("redOnion");
   const adminCollection = db.collection("admin");
+  const menuCollection = db.collection("menu");
   console.log("Database Connected");
   // ========= Checking Identity ========= //
 
@@ -37,6 +38,20 @@ client.connect((err) => {
   });
 
   // =====x==== Checking Identity =====x==== //
+
+  // =====x==== Getting Menu from Database ========= //
+
+  app.get("/menu", (req, res) => {
+    menuCollection.find({}).toArray((err, docs) => {
+      if (docs) {
+        res.send(docs);
+      } else {
+        res.send(err);
+      }
+    });
+  });
+
+  // =====x==== Getting Menu from Database =====x==== //
 });
 
 // ======x======= Connecting to MongoDB Database =====x===== //
