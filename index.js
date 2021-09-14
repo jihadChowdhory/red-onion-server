@@ -3,7 +3,9 @@ const app = express();
 const port = 5000;
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const fileUpload = require("express-fileupload");
 require("dotenv").config();
+app.use(fileUpload());
 app.use(bodyParser.json());
 app.use(cors());
 app.get("/", (req, res) => {
@@ -52,6 +54,30 @@ client.connect((err) => {
   });
 
   // =====x==== Getting Menu from Database =====x==== //
+  // ========= Adding food item to Database ========= //
+
+  app.post("/addfood", (req, res) => {
+    const file = req.files.file;
+    const name = req.body.name;
+    const details = req.body.details;
+    const price = req.body.price;
+    const newImg = file.data;
+    const encodedImg = newImg.toString("base64");
+    const img = {
+      contentType: file.mimetype,
+      size: file.size,
+      img: Buffer.from(encodedImg, "base64"),
+    };
+    menuCollection.insertOne({ name, details, price, img }).then((result) => {
+      if (result.insertedId) {
+        res.send(true);
+      } else {
+        res.send(false);
+      }
+    });
+  });
+
+  // =====x==== Adding food item to Database =====x==== //
 });
 
 // ======x======= Connecting to MongoDB Database =====x===== //
